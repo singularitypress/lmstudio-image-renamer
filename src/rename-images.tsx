@@ -98,8 +98,13 @@ export default function Command() {
 
         const imageFiles = finderItems.flatMap((item) =>
           isImageFile(item.path)
-            ? [{ path: item.path, name: item.path.split("/").pop() || item.path }]
-            : []
+            ? [
+                {
+                  path: item.path,
+                  name: item.path.split("/").pop() || item.path,
+                },
+              ]
+            : [],
         );
 
         if (imageFiles.length === 0) {
