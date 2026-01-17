@@ -137,7 +137,7 @@ export default function Command() {
         actions={
           <ActionPanel>
             <Action.OpenInBrowser
-              title="Open LM Studio Docs"
+              title="Open Lm Studio Docs"
               url="https://lmstudio.ai/docs"
             />
           </ActionPanel>

@@ -4,7 +4,7 @@
   "description": "Rename images using AI vision models via LM Studio",
   "icon": "icon.png",
   "repository": {
-    "url": "https://github.com/singularitypress/lmstudio-image-renamer.git"
+    "url": "git+https://github.com/singularitypress/lmstudio-image-renamer.git"
   },
   "author": "singularitypress",
   "categories": [
