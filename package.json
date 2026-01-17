@@ -1,5 +1,6 @@
 {
   "name": "lmstudio-image-renamer",
+  "version": "1.0.0",
   "title": "LM Studio Image Renamer",
   "description": "Rename images using AI vision models via LM Studio",
   "icon": "icon.png",
