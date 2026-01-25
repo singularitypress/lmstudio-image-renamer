@@ -1,5 +1,7 @@
 import { getPreferenceValues } from "@raycast/api";
+import { execSync } from "child_process";
 import fs from "fs";
+import os from "os";
 import path from "path";
 
 /**
@@ -88,6 +90,38 @@ interface ChatCompletionResponse {
     /** Human-readable error message. */
     message: string;
   };
+}
+
+// Configuration for image preprocessing
+const IMAGE_MAX_DIMENSION = 512; // Resize to max 512px on longest edge
+const JPEG_QUALITY = 80; // Compression quality (0-100)
+
+/**
+ * Preprocess an image for sending to the vision model.
+ * Uses macOS sips to resize and convert to JPEG to reduce payload size.
+ * Runs as external process - won't hit Raycast's memory limits.
+ */
+async function preprocessImage(imagePath: string): Promise<Buffer> {
+  const tmpDir = os.tmpdir();
+  const tmpFile = path.join(tmpDir, `raycast-lmstudio-${Date.now()}.jpg`);
+
+  try {
+    // Resize and convert to JPEG in one command
+    execSync(
+      `sips --resampleHeightWidthMax ${IMAGE_MAX_DIMENSION} --setProperty format jpeg --setProperty formatOptions ${JPEG_QUALITY} "${imagePath}" --out "${tmpFile}"`,
+      { stdio: "pipe" },
+    );
+
+    // Read the processed file
+    const processed = fs.readFileSync(tmpFile);
+
+    return processed;
+  } finally {
+    // Clean up temp file
+    if (fs.existsSync(tmpFile)) {
+      fs.unlinkSync(tmpFile);
+    }
+  }
 }
 
 /**
@@ -180,8 +214,8 @@ export async function getImageName(
   imagePath: string,
   model: string,
 ): Promise<string> {
-  const imageBuffer = fs.readFileSync(imagePath);
-  const base64Image = imageBuffer.toString("base64");
+  const processedBuffer = await preprocessImage(imagePath);
+  const base64Image = processedBuffer.toString("base64");
   const mimeType = getMimeType(imagePath);
 
   const messages: ChatMessage[] = [
